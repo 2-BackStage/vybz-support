@@ -5,6 +5,7 @@ import back.vybz.support_service.common.entity.BaseResponseStatus;
 import back.vybz.support_service.support.application.DonationService;
 import back.vybz.support_service.support.dto.request.RequestDonationDto;
 import back.vybz.support_service.support.vo.request.RequestDonationVo;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ public class DonationController {
 
     private final DonationService donationService;
 
+    @Operation(summary = "후원 API", description = "후원 입니다.", tags = {"Support-Service"})
     @PostMapping
     public BaseResponseEntity<Void> sendDonation(
             @RequestBody RequestDonationVo requestDonationVo
