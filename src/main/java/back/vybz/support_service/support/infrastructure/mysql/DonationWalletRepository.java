@@ -1,6 +1,6 @@
-package back.vybz.support_service.support.infrastructure;
+package back.vybz.support_service.support.infrastructure.mysql;
 
-import back.vybz.support_service.support.domain.DonationWallet;
+import back.vybz.support_service.support.domain.mysql.DonationWallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

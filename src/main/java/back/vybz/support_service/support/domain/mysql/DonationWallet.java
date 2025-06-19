@@ -1,4 +1,4 @@
-package back.vybz.support_service.support.domain;
+package back.vybz.support_service.support.domain.mysql;
 
 import back.vybz.support_service.common.entity.BaseEntity;
 import back.vybz.support_service.common.entity.BaseResponseStatus;
@@ -39,6 +39,10 @@ public class DonationWallet extends BaseEntity {
         if (this.ticketCount < amount) {
             throw new BaseException(BaseResponseStatus.INSUFFICIENT_V_TICKET);
         }
+        this.ticketCount -= amount;
+    }
+
+    public void ticketsByRefund(int amount) {
         this.ticketCount -= amount;
     }
 }
