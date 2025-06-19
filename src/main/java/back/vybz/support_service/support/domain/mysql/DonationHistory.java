@@ -1,4 +1,4 @@
-package back.vybz.support_service.support.domain;
+package back.vybz.support_service.support.domain.mysql;
 
 import back.vybz.support_service.common.entity.SoftDeletableEntity;
 import jakarta.persistence.*;
@@ -28,6 +28,9 @@ public class DonationHistory extends SoftDeletableEntity {
     @Column(name = "v_ticket_amount", nullable = false)
     private Integer ticketAmount;
 
+    @Column(name = "amount", nullable = false)
+    private Integer amount;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "donation_status", nullable = false)
     private DonationState donationState;
@@ -37,13 +40,14 @@ public class DonationHistory extends SoftDeletableEntity {
 
     @Builder
     public DonationHistory(Long id, String donationReceivedUuid,
-                           String userUuid, String buskerUuid, Integer ticketAmount,
+                           String userUuid, String buskerUuid, Integer ticketAmount, Integer amount,
                            DonationState donationState, String message) {
         this.id = id;
         this.donationReceivedUuid = donationReceivedUuid;
         this.userUuid = userUuid;
         this.buskerUuid = buskerUuid;
         this.ticketAmount = ticketAmount;
+        this.amount = amount;
         this.donationState = donationState;
         this.message = message;
     }

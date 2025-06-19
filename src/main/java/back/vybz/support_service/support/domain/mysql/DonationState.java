@@ -1,4 +1,4 @@
-package back.vybz.support_service.support.domain;
+package back.vybz.support_service.support.domain.mysql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum DonationState {
 
     CHARGE("v-티켓 충전"),
-    DONATION("후원");
+    DONATION("후원"),
+    REFUND("환불");
 
     private final String donationState;
 }
