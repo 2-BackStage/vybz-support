@@ -64,8 +64,6 @@ public class DonationServiceImpl implements DonationService {
 
         donationWallet.useTickets(requestDonationDto.getTicketAmount());
 
-        // donationWalletRepository.save(donationWallet);
-
         DonationHistory donation = DonationHistory.builder()
                 .donationReceivedUuid(UUID.randomUUID().toString())
                 .userUuid(requestDonationDto.getUserUuid())
