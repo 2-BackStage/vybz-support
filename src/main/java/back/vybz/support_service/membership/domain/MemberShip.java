@@ -25,6 +25,7 @@ public class MemberShip extends SoftDeletableEntity {
     @Column(name = "price", nullable = false)
     private Integer price;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MemberShipStatus memberShipStatus;
 
@@ -36,5 +37,10 @@ public class MemberShip extends SoftDeletableEntity {
         this.buskerUuid = buskerUuid;
         this.price = price;
         this.memberShipStatus = memberShipStatus;
+    }
+
+    public void cancel() {
+        this.memberShipStatus = MemberShipStatus.CANCELED;
+        this.softDelete();
     }
 }

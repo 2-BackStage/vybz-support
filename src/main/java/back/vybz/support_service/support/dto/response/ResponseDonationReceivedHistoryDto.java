@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class   ResponseDonationReceivedHistoryDto {
+public class  ResponseDonationReceivedHistoryDto {
 
     private String userUuid;
 

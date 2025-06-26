@@ -72,6 +72,8 @@ public enum BaseResponseStatus {
     LOGIN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, false, 902, "로그인에 실패하였습니다."),
     NO_DONATION_RECORD(HttpStatus.NOT_FOUND, false, 903, "해당 유저의 후원 내역이 존재하지 않습니다"),
     NO_DONATION_RECEIVED(HttpStatus.NOT_FOUND, false, 903, "해당 버스커의 후원 받은 내역이 존재하지 않습니다"),
+    NO_ACTIVE_MEMBERSHIP(HttpStatus.NOT_FOUND, false, 904, "활성화된 멤버십이 존재하지 않습니다."),
+    ALREADY_SUBSCRIBED(HttpStatus.CONFLICT, false, 901, "이미 활성화된 구독이 존재합니다."),
 
     /**
      * Request 유효성 에러

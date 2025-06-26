@@ -4,9 +4,10 @@ import back.vybz.support_service.common.dto.request.RequestPageDTO;
 import back.vybz.support_service.common.dto.response.ResponsePageDTO;
 import back.vybz.support_service.common.entity.BaseResponseStatus;
 import back.vybz.support_service.common.exception.BaseException;
+import back.vybz.support_service.support.application.feign.BuskerProfileFeignClient;
+import back.vybz.support_service.support.application.feign.UserProfileFeignClient;
 import back.vybz.support_service.support.domain.mongo.BuskerInfo;
 import back.vybz.support_service.support.domain.mongo.Donation;
-import back.vybz.support_service.support.domain.mongo.DonationReceived;
 import back.vybz.support_service.support.domain.mongo.UserInfo;
 import back.vybz.support_service.support.domain.mysql.DonationHistory;
 import back.vybz.support_service.support.domain.mysql.DonationState;
@@ -51,6 +52,9 @@ public class DonationServiceImpl implements DonationService {
 
     private static final int TICKET_UNIT_PRICE = 110;
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+
     @Transactional
     @Override
     public void useDonateVTicket(RequestDonationDto requestDonationDto) {
@@ -59,8 +63,6 @@ public class DonationServiceImpl implements DonationService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.DONATION_WALLET_NOT_FOUND));
 
         donationWallet.useTickets(requestDonationDto.getTicketAmount());
-
-        donationWalletRepository.save(donationWallet);
 
         DonationHistory donation = DonationHistory.builder()
                 .donationReceivedUuid(UUID.randomUUID().toString())
@@ -92,16 +94,20 @@ public class DonationServiceImpl implements DonationService {
                 .userProfileImageUrl(responseUserProfileVo.getProfileImageUrl())
                 .build();
 
-        donationMongoRepository.save(
-                back.vybz.support_service.support.domain.mongo.Donation.builder()
-                        .userUuid(donation.getUserUuid())
-                        .buskerUuid(donation.getBuskerUuid())
-                        .ticketCount(donation.getTicketAmount())
-                        .message(donation.getMessage())
-                        .user(userInfo)
-                        .busker(buskerInfo)
-                        .build()
-        );
+        try {
+            donationMongoRepository.save(
+                    back.vybz.support_service.support.domain.mongo.Donation.builder()
+                            .userUuid(donation.getUserUuid())
+                            .buskerUuid(donation.getBuskerUuid())
+                            .ticketCount(donation.getTicketAmount())
+                            .message(donation.getMessage())
+                            .user(userInfo)
+                            .busker(buskerInfo)
+                            .build()
+            );
+        } catch (Exception e) {
+            log.warn("⚠️ Mongo 저장 실패 - 무시하고 진행: {}", e.getMessage()); // 추후 수정 예정
+        }
 
         donationHistoryRepository.save(donation);
     }
@@ -130,8 +136,6 @@ public class DonationServiceImpl implements DonationService {
                 userUuid, pageable
         );
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         List<ResponseDonationHistoryDto> dtoList = pageResult.getContent().stream()
                 .map(donation -> ResponseDonationHistoryDto.builder()
                         .buskerUuid(donation.getBuskerUuid())
@@ -139,14 +143,14 @@ public class DonationServiceImpl implements DonationService {
                         .profileImageUrl(donation.getBusker().getBuskerProfileImageUrl())
                         .ticketCount(donation.getTicketCount())
                         .message(donation.getMessage())
-                        .donatedAt(dateTimeFormatter.format(
+                        .donatedAt(DATE_FORMATTER.format(
                                 donation.getDonatedAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDate())
                         )
                         .build()
                 ).toList();
 
         return ResponsePageDTO.<ResponseDonationHistoryDto>builder()
-                .type("PURCHASE")
+                .type("DONATION")
                 .dtoList(dtoList)
                 .requestPageDTO(pageRequestDTO)
                 .totalCount(pageResult.getTotalElements())
@@ -177,8 +181,6 @@ public class DonationServiceImpl implements DonationService {
                 buskerUuid, pageable
         );
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         List<ResponseDonationReceivedHistoryDto> donationReceivedHistoryDtoList = pageResult.getContent().stream()
                 .map(donation -> ResponseDonationReceivedHistoryDto.builder()
                         .userUuid(donation.getUserUuid())
@@ -186,7 +188,7 @@ public class DonationServiceImpl implements DonationService {
                         .profileImageUrl(donation.getUser().getUserProfileImageUrl())
                         .ticketCount(donation.getTicketCount())
                         .message(donation.getMessage())
-                        .receivedAt(dateTimeFormatter.format(
+                        .receivedAt(DATE_FORMATTER.format(
                                 donation.getDonatedAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDate())
                         )
                         .build()

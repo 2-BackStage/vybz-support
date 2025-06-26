@@ -1,4 +1,4 @@
-package back.vybz.support_service.support.application;
+package back.vybz.support_service.support.application.feign;
 
 import back.vybz.support_service.common.entity.BaseResponseEntity;
 import back.vybz.support_service.support.vo.response.ResponseBuskerProfileVo;
