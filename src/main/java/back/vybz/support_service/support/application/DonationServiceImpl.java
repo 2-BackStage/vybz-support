@@ -4,6 +4,8 @@ import back.vybz.support_service.common.dto.request.RequestPageDTO;
 import back.vybz.support_service.common.dto.response.ResponsePageDTO;
 import back.vybz.support_service.common.entity.BaseResponseStatus;
 import back.vybz.support_service.common.exception.BaseException;
+import back.vybz.support_service.kafka.event.TicketChangedEvent;
+import back.vybz.support_service.kafka.producer.VTicketKafkaEventProducer;
 import back.vybz.support_service.support.application.feign.BuskerProfileFeignClient;
 import back.vybz.support_service.support.application.feign.UserProfileFeignClient;
 import back.vybz.support_service.support.domain.mongo.BuskerInfo;
@@ -49,6 +51,8 @@ public class DonationServiceImpl implements DonationService {
     private final BuskerProfileFeignClient buskerProfileFeignClient;
 
     private final UserProfileFeignClient userProfileFeignClient;
+
+    private final VTicketKafkaEventProducer vTicketKafkaEventProducer;
 
     private static final int TICKET_UNIT_PRICE = 110;
 
@@ -110,6 +114,13 @@ public class DonationServiceImpl implements DonationService {
         }
 
         donationHistoryRepository.save(donation);
+
+        vTicketKafkaEventProducer.sendPaymentConfirmEvent(
+                TicketChangedEvent.builder()
+                        .userUuid(donationWallet.getUserUuid())
+                        .ticketCount(donationWallet.getTicketCount())
+                        .build()
+        );
     }
 
     /**

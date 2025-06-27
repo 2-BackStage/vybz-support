@@ -2,6 +2,8 @@ package back.vybz.support_service.kafka.consumer;
 
 import back.vybz.support_service.kafka.event.ChargePaymentEvent;
 import back.vybz.support_service.kafka.event.PaymentRefundEvent;
+import back.vybz.support_service.kafka.event.TicketChangedEvent;
+import back.vybz.support_service.kafka.producer.VTicketKafkaEventProducer;
 import back.vybz.support_service.support.domain.mysql.DonationHistory;
 import back.vybz.support_service.support.domain.mysql.DonationState;
 import back.vybz.support_service.support.domain.mysql.DonationWallet;
@@ -20,6 +22,8 @@ public class PaymentChargeEventConsumer {
     private final DonationHistoryRepository donationHistoryRepository;
 
     private final DonationWalletRepository donationWalletRepository;
+
+    private final VTicketKafkaEventProducer vTicketKafkaEventProducer;
 
     @KafkaListener(
             topics = "create-payment-confirm",
@@ -51,6 +55,11 @@ public class PaymentChargeEventConsumer {
         }
 
         donationWalletRepository.save(donationWallet);
+
+        vTicketKafkaEventProducer.sendPaymentConfirmEvent(TicketChangedEvent.builder()
+                .userUuid(chargePaymentEvent.getUserUuid())
+                .ticketCount(chargePaymentEvent.getTicketCount())
+                .build());
     }
 
     @KafkaListener(

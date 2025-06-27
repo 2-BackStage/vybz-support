@@ -7,7 +7,6 @@ import back.vybz.support_service.kafka.event.SubscriptionEvent;
 import back.vybz.support_service.membership.domain.MemberShip;
 import back.vybz.support_service.membership.domain.MemberShipStatus;
 import back.vybz.support_service.membership.infrastructure.MemberShipRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
