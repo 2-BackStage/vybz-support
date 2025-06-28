@@ -30,7 +30,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public List<ResponseMemberShipDto> getExpiredMemberships(String userUuid) {
         List<MemberShip> expiredMemberships = memberShipRepository
-                .findByUserUuidAndMemberShipStatusAndDeletedFalse(userUuid, MemberShipStatus.CANCELED);
+                .findByUserUuidAndMemberShipStatusAndDeletedTrue(userUuid, MemberShipStatus.CANCELED);
 
         List<MemberShip> activeMemberships = memberShipRepository
                 .findByUserUuidAndMemberShipStatusAndDeletedFalse(userUuid, MemberShipStatus.SUCCESS);

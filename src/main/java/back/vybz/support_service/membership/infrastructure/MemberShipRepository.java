@@ -14,4 +14,6 @@ public interface MemberShipRepository extends JpaRepository<MemberShip, Long> {
     Optional<MemberShip> findAllByUserUuidAndBuskerUuidAndDeletedFalse(String userUuid, String buskerUuid);
 
     List<MemberShip> findByUserUuidAndMemberShipStatusAndDeletedFalse(String userUuid, MemberShipStatus memberShipStatus);
+
+    List<MemberShip> findByUserUuidAndMemberShipStatusAndDeletedTrue(String userUuid, MemberShipStatus memberShipStatus);
 }
