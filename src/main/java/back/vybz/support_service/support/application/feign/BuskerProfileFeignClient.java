@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "busker-info-service", url = "http://localhost:8089")
+@FeignClient(name = "busker-info-service")
 public interface BuskerProfileFeignClient {
 
     @GetMapping("/busker-info-service/api/v1/busker/profile/{buskerUuid}")
