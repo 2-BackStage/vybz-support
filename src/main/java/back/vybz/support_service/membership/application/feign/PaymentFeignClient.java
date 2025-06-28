@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "payment-service")
 public interface PaymentFeignClient {
 
-    @PostMapping("/payment-service/api/v1/membership/billing/register")
+    @PostMapping("/api/v1/membership/billing/register")
     BaseResponseEntity<ResponseBillingKeyDto> requestBillingKey(@RequestBody RequestSubscribeDto requestSubscribeDto);
 
-    @DeleteMapping("/payment-service/api/v1/membership")
+    @DeleteMapping("/api/v1/membership")
     BaseResponseEntity<Void> subscriptionCancel(@RequestBody RequestSubscriptionCancelDto requestSubscriptionCancelDto);
 }
