@@ -41,6 +41,5 @@ public class MemberShip extends SoftDeletableEntity {
 
     public void cancel() {
         this.memberShipStatus = MemberShipStatus.CANCELED;
-        this.softDelete();
     }
 }
