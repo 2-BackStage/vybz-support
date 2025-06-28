@@ -40,5 +40,4 @@ public class SubscribeController {
 
         return new BaseResponseEntity<>(BaseResponseStatus.SUCCESS);
     }
-
 }
