@@ -5,12 +5,14 @@ import back.vybz.support_service.membership.domain.MemberShipStatus;
 import back.vybz.support_service.membership.dto.response.ResponseMemberShipDto;
 import back.vybz.support_service.membership.infrastructure.MemberShipRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {

@@ -3,9 +3,14 @@ package back.vybz.support_service.membership.application;
 import back.vybz.support_service.common.entity.BaseResponseEntity;
 import back.vybz.support_service.common.entity.BaseResponseStatus;
 import back.vybz.support_service.common.exception.BaseException;
+import back.vybz.support_service.membership.application.feign.FeedReadFeignClient;
+import back.vybz.support_service.membership.application.feign.LiveFeignClient;
 import back.vybz.support_service.membership.application.feign.PaymentFeignClient;
+import back.vybz.support_service.membership.domain.MemberShip;
+import back.vybz.support_service.membership.domain.MemberShipStatus;
 import back.vybz.support_service.membership.dto.request.RequestSubscribeDto;
 import back.vybz.support_service.membership.dto.request.RequestSubscriptionCancelDto;
+import back.vybz.support_service.membership.dto.request.RequestSubscriptionStatusDto;
 import back.vybz.support_service.membership.dto.response.ResponseBillingKeyDto;
 import back.vybz.support_service.membership.infrastructure.MemberShipRepository;
 import jakarta.transaction.Transactional;
@@ -19,8 +24,9 @@ import org.springframework.stereotype.Service;
 public class SubscribeServiceImpl implements SubscribeService {
 
     private final PaymentFeignClient paymentFeignClient;
-
     private final MemberShipRepository memberShipRepository;
+    private final FeedReadFeignClient feedReadFeignClient;
+    private final LiveFeignClient liveFeignClient;
 
     @Transactional
     @Override
@@ -42,6 +48,12 @@ public class SubscribeServiceImpl implements SubscribeService {
 
         log.info("✅ billingKey: {}", responseBillingKeyDto.getBillingKey());
 
+        sendSubscriptionStatusToServices(requestSubscribeDto.getUserUuid(), 
+                requestSubscribeDto.getBuskerUuid(), 
+                requestSubscribeDto.getPrice(), 
+                MemberShipStatus.SUCCESS, 
+                "SUBSCRIPTION_CREATED");
+
         return responseBillingKeyDto;
     }
 
@@ -57,5 +69,49 @@ public class SubscribeServiceImpl implements SubscribeService {
                 paymentFeignClient.subscriptionCancel(requestSubscriptionCancelDto);
 
         log.info("✅ Subscription Cancel 완료");
+
+        MemberShip memberShip = memberShipRepository
+                .findAllByUserUuidAndBuskerUuidAndDeletedFalse(
+                        requestSubscriptionCancelDto.getUserUuid(), 
+                        requestSubscriptionCancelDto.getBuskerUuid())
+                .orElse(null);
+
+        if (memberShip != null) {
+            memberShip.cancel();
+            sendSubscriptionStatusToServices(memberShip.getUserUuid(), 
+                    memberShip.getBuskerUuid(), 
+                    memberShip.getPrice(), 
+                    memberShip.getMemberShipStatus(), 
+                    "SUBSCRIPTION_CANCELED");
+        }
+    }
+
+    private void sendSubscriptionStatusToServices(String userUuid, String buskerUuid, 
+                                                 Integer price, MemberShipStatus memberShipStatus, String eventType) {
+        RequestSubscriptionStatusDto requestDto = RequestSubscriptionStatusDto.builder()
+                .userUuid(userUuid)
+                .buskerUuid(buskerUuid)
+                .price(price)
+                .memberShipStatus(memberShipStatus)
+                .eventType(eventType)
+                .build();
+
+        try {
+            feedReadFeignClient.sendSubscriptionStatus(requestDto);
+            log.info("구독 현황이 피드리드 서비스에 성공적으로 전송되었습니다. userUuid: {}, buskerUuid: {}, eventType: {}", 
+                    userUuid, buskerUuid, eventType);
+        } catch (Exception e) {
+            log.error("피드리드 서비스에 구독 현황 전송 실패. userUuid: {}, buskerUuid: {}, eventType: {}", 
+                    userUuid, buskerUuid, eventType, e);
+        }
+
+        try {
+            liveFeignClient.sendSubscriptionStatus(requestDto);
+            log.info("구독 현황이 라이브 서비스에 성공적으로 전송되었습니다. userUuid: {}, buskerUuid: {}, eventType: {}", 
+                    userUuid, buskerUuid, eventType);
+        } catch (Exception e) {
+            log.error("라이브 서비스에 구독 현황 전송 실패. userUuid: {}, buskerUuid: {}, eventType: {}", 
+                    userUuid, buskerUuid, eventType, e);
+        }
     }
 }
