@@ -58,7 +58,7 @@ public class PaymentChargeEventConsumer {
 
         vTicketKafkaEventProducer.sendPaymentConfirmEvent(TicketChangedEvent.builder()
                 .userUuid(chargePaymentEvent.getUserUuid())
-                .ticketCount(chargePaymentEvent.getTicketCount())
+                .ticketCount(donationWallet.getTicketCount())
                 .build());
     }
 
@@ -84,6 +84,12 @@ public class PaymentChargeEventConsumer {
             wallet.ticketsByRefund(paymentRefundEvent.getTicketCount());
 
             donationWalletRepository.save(wallet);
+            
+            // 환불 후 전체 티켓 수 전송
+            vTicketKafkaEventProducer.sendPaymentConfirmEvent(TicketChangedEvent.builder()
+                    .userUuid(paymentRefundEvent.getUserUuid())
+                    .ticketCount(wallet.getTicketCount())
+                    .build());
         });
     }
 }
