@@ -64,6 +64,15 @@ public enum BaseResponseStatus {
     BUSKER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, false, 7503, "버스커 정보를 찾을 수 없습니다."),
     USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, false, 7503, "사용자 정보를 찾을 수 없습니다."),
 
+    // settlement
+    SETTLEMENT_AMOUNT_EXCEEDED(HttpStatus.BAD_REQUEST, false, 7601, "정산 신청 금액이 정산 가능 금액을 초과합니다."),
+    SETTLEMENT_INVALID_AMOUNT(HttpStatus.BAD_REQUEST, false, 7602, "정산 신청 금액이 최소 정산 금액보다 작습니다."),
+    SETTLEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, false, 7603, "정산 신청을 찾을 수 없습니다."),
+    SETTLEMENT_NOT_PENDING(HttpStatus.BAD_REQUEST, false, 7604, "대기중인 정산 신청만 수정할 수 있습니다."),
+    SETTLEMENT_UPDATE_AMOUNT_EXCEEDED(HttpStatus.BAD_REQUEST, false, 7605, "수정된 정산 신청 금액이 정산 가능 금액을 초과합니다."),
+    SETTLEMENT_INVALID_ACCOUNT_NUMBER(HttpStatus.BAD_REQUEST, false, 7606, "유효하지 않은 계좌번호 형식입니다."),
+
+
     /**
      * 900: 기타 에러
      */
