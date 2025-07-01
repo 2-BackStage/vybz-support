@@ -3,6 +3,8 @@ package back.vybz.support_service.membership.application;
 import back.vybz.support_service.membership.domain.MemberShip;
 import back.vybz.support_service.membership.domain.MemberShipStatus;
 import back.vybz.support_service.membership.dto.response.ResponseMemberShipDto;
+import back.vybz.support_service.membership.dto.response.ResponseSubscriptionCountDto;
+import back.vybz.support_service.membership.dto.response.ResponseUserSubscriptionCountDto;
 import back.vybz.support_service.membership.infrastructure.MemberShipRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,5 +48,25 @@ public class MembershipServiceImpl implements MembershipService {
                 .map(ResponseMemberShipDto::from)
                 .toList();
 
+    }
+
+    @Override
+    public ResponseSubscriptionCountDto getSubscriptionCount(String buskerUuid) {
+        long subscriptionCount = memberShipRepository.countByBuskerUuidAndStatus(buskerUuid, MemberShipStatus.SUCCESS);
+        
+        return ResponseSubscriptionCountDto.builder()
+                .buskerUuid(buskerUuid)
+                .subscriptionCount((int) subscriptionCount)
+                .build();
+    }
+
+    @Override
+    public ResponseUserSubscriptionCountDto getUserSubscriptionCount(String userUuid) {
+        long subscriptionCount = memberShipRepository.countByUserUuidAndStatus(userUuid, MemberShipStatus.SUCCESS);
+        
+        return ResponseUserSubscriptionCountDto.builder()
+                .userUuid(userUuid)
+                .subscriptionCount((int) subscriptionCount)
+                .build();
     }
 }
