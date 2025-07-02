@@ -2,8 +2,10 @@ package back.vybz.support_service.kafka.consumer;
 
 import back.vybz.support_service.common.entity.BaseResponseStatus;
 import back.vybz.support_service.common.exception.BaseException;
+import back.vybz.support_service.kafka.event.SubscribeCountEvent;
 import back.vybz.support_service.kafka.event.SubscriptionCancelEvent;
 import back.vybz.support_service.kafka.event.SubscriptionEvent;
+import back.vybz.support_service.kafka.producer.SubscribeCountEventProducer;
 import back.vybz.support_service.membership.domain.MemberShip;
 import back.vybz.support_service.membership.domain.MemberShipStatus;
 import back.vybz.support_service.membership.infrastructure.MemberShipRepository;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 public class SubscriptionEventConsumer {
 
     private final MemberShipRepository memberShipRepository;
+
+    private final SubscribeCountEventProducer subscribeCountEventProducer;
 
     @KafkaListener(
             topics = "subscription-completed",
@@ -35,6 +39,20 @@ public class SubscriptionEventConsumer {
                 .memberShipStatus(MemberShipStatus.SUCCESS)
                 .build()
         );
+
+        // ✅ 현재 유저의 구독 수 조회
+        int count = (int) memberShipRepository.countByUserUuidAndStatus(subscriptionEvent.getUserUuid(), MemberShipStatus.SUCCESS);
+        log.info("🌟 유저 구독 수 조회 : {}", count);
+
+        // ✅ Kafka 이벤트 전송
+        subscribeCountEventProducer.sendSubscribeCountEvent(
+                SubscribeCountEvent.builder()
+                        .userUuid(subscriptionEvent.getUserUuid())
+                        .subscriptionCount(count)
+                        .build()
+        );
+
+        log.info("🔥 Kafka 이벤트 전송 : {}", subscriptionEvent);
     }
 
     @KafkaListener(
@@ -56,5 +74,15 @@ public class SubscriptionEventConsumer {
         memberShip.cancel();
 
         memberShipRepository.save(memberShip);
+
+        int count = (int) memberShipRepository.countByUserUuidAndStatus(
+                subscriptionCancelEvent.getUserUuid(), MemberShipStatus.SUCCESS);
+
+        subscribeCountEventProducer.sendSubscribeCountEvent(
+                SubscribeCountEvent.builder()
+                        .userUuid(subscriptionCancelEvent.getUserUuid())
+                        .subscriptionCount(count)
+                        .build()
+        );
     }
 }

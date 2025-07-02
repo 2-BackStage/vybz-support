@@ -1,7 +1,6 @@
 package back.vybz.support_service.kafka.config;
 
 import back.vybz.support_service.kafka.event.SubscribeCountEvent;
-import back.vybz.support_service.kafka.event.TicketChangedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
