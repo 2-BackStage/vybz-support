@@ -24,28 +24,28 @@ public class MembershipController {
 
     private final MembershipService membershipService;
 
-    @Operation(summary = "구독중인 멤버십 조회", description = "구독중인 멤버십 목록을 조회합니다.")
+    @Operation(summary = "구독중인 멤버십 조회", description = "구독중인 멤버십 목록을 조회합니다.",  tags = {"Membership-Service"})
     @GetMapping("/active/{userUuid}")
     public BaseResponseEntity<List<ResponseMemberShipDto>> getActiveMemberships(@PathVariable String userUuid) {
         List<ResponseMemberShipDto> activeMemberships = membershipService.getActiveMemberships(userUuid);
         return new BaseResponseEntity<>(BaseResponseStatus.SUCCESS, activeMemberships);
     }
 
-    @Operation(summary = "만료된 멤버십 조회", description = "만료된 멤버십 목록을 조회합니다. (동일 buskerUuid 다시 구독중이면 제외)")
+    @Operation(summary = "만료된 멤버십 조회", description = "만료된 멤버십 목록을 조회합니다. (동일 buskerUuid 다시 구독중이면 제외)",  tags = {"Membership-Service"})
     @GetMapping("/expired/{userUuid}")
     public BaseResponseEntity<List<ResponseMemberShipDto>> getExpiredMemberships(@PathVariable String userUuid) {
         List<ResponseMemberShipDto> expiredMemberships = membershipService.getExpiredMemberships(userUuid);
         return new BaseResponseEntity<>(BaseResponseStatus.SUCCESS, expiredMemberships);
     }
 
-    @Operation(summary = "버스커 구독자 수 조회", description = "특정 버스커의 활성 구독자 수를 조회합니다.")
-    @GetMapping("/count/{buskerUuid}")
+    @Operation(summary = "버스커 구독자 수 조회", description = "특정 버스커의 활성 구독자 수를 조회합니다.",  tags = {"Membership-Service"})
+    @GetMapping("/busker-count/{buskerUuid}")
     public BaseResponseEntity<ResponseSubscriptionCountDto> getSubscriptionCount(@PathVariable String buskerUuid) {
         ResponseSubscriptionCountDto subscriptionCount = membershipService.getSubscriptionCount(buskerUuid);
         return new BaseResponseEntity<>(BaseResponseStatus.SUCCESS, subscriptionCount);
     }
 
-    @Operation(summary = "유저 구독 개수 조회", description = "특정 유저가 구독한 버스커 수를 조회합니다.")
+    @Operation(summary = "유저 구독 개수 조회", description = "특정 유저가 구독한 버스커 수를 조회합니다.",  tags = {"Membership-Service"})
     @GetMapping("/user-count/{userUuid}")
     public BaseResponseEntity<ResponseUserSubscriptionCountDto> getUserSubscriptionCount(@PathVariable String userUuid) {
         ResponseUserSubscriptionCountDto userSubscriptionCount = membershipService.getUserSubscriptionCount(userUuid);

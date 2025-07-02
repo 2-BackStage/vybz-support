@@ -13,6 +13,7 @@ import back.vybz.support_service.settlement.vo.request.RequestSettlementUpdateVo
 import back.vybz.support_service.settlement.vo.request.RequestSettlementVo;
 import back.vybz.support_service.settlement.vo.response.ResponseSettlementHistoryVo;
 import back.vybz.support_service.settlement.vo.response.ResponseSettlementVo;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class SettlementController {
     private final SettlementService settlementService;
 
     // 정산 가능 금액 조회
+    @Operation(summary = "정산 가능 금액 조회", description = "정산 가능 금액 조회 API 입니다.",  tags = {"Settlement-Service"})
     @GetMapping("/status/{buskerUuid}")
     public BaseResponseEntity<ResponseSettlementStatusDto> getSettlementStatus(
             @PathVariable String buskerUuid
@@ -36,6 +38,7 @@ public class SettlementController {
     }
 
     // 정산 신청
+    @Operation(summary = "정산 신청", description = "정산 신청 API 입니다.",  tags = {"Settlement-Service"})
     @PostMapping("/{buskerUuid}")
     public BaseResponseEntity<ResponseSettlementVo> createSettlement(
             @PathVariable String buskerUuid,
@@ -48,6 +51,7 @@ public class SettlementController {
     }
 
     // 정산 신청 내역 조회
+    @Operation(summary = "정산 신청 내역 조회", description = "정산 신청 내역 조회 API 입니다.",  tags = {"Settlement-Service"})
     @GetMapping("/history/{buskerUuid}")
     public BaseResponseEntity<ResponsePageDTO<ResponseSettlementHistoryVo>> getSettlementHistory(
             @PathVariable String buskerUuid,
@@ -70,6 +74,7 @@ public class SettlementController {
     }
 
     // 정산 신청 수정
+    @Operation(summary = " 정산 신청 수정", description = " 정산 신청 수정 API 입니다.",  tags = {"Settlement-Service"})
     @PutMapping("/{settlementsUuid}")
     public BaseResponseEntity<ResponseSettlementVo> updateSettlement(
             @PathVariable String settlementsUuid,
